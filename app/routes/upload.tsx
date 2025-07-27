@@ -2,12 +2,14 @@ import React,{type FormEvent,useState} from 'react'
 import FileUploader from "../components/FileUploader";
 import Navbar from "../components/Navbar";
 import {usePuterStore} from "~/lib/puter";
+import {useNavigate} from "react-router";
 import {convertPdfToImage} from "~/lib/pdf2img";
 import { generateUUID } from '~/lib/utils';
 import {prepareInstructions} from "../../constants";
 
 const upload = () => {
     const {auth,isLoading,fs,ai,kv} = usePuterStore()
+    const navigate = useNavigate()
     const [isProcessing, setIsProcessing] = useState(false);
     const [statusText, setStatusText] = useState('');
     const[file,setFile]=useState<File | null>()
@@ -71,6 +73,7 @@ const upload = () => {
         await kv.set(`resume:${uuid}`,JSON.stringify(data))
         setStatusText('Analysis complete , redirecting');
         console.log(data);
+        navigate(`/resume/${uuid}`);
 
         
 
