@@ -1,8 +1,18 @@
 import { Link } from 'react-router';
-import { usePuterStore } from '~/lib/puter';
+import { useFirebaseStore } from '~/lib/firebaseStore';
 
 const Navbar = () => {
-  const { auth } = usePuterStore();
+  const { auth } = useFirebaseStore();
+
+  const handleAuthAction = async () => {
+    if (auth.isAuthenticated) {
+      await auth.signOut();
+    } else {
+      // Navigate to auth page
+      window.location.href = '/auth';
+    }
+  };
+
   return (
     <nav className='fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
@@ -16,18 +26,27 @@ const Navbar = () => {
           
           {/* Navigation Links */}
           <div className='flex items-center space-x-4'>
-            <Link 
-              to="/upload" 
-              className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-md hover:shadow-lg"
-            >
-              Upload Resume
-            </Link>
-            <Link 
-              to="/auth" 
+            {auth.isAuthenticated && (
+              <>
+                <Link 
+                  to="/upload" 
+                  className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-md hover:shadow-lg"
+                >
+                  Upload Resume
+                </Link>
+                {auth.user && (
+                  <span className="text-sm text-gray-700">
+                    Hi, {auth.user.displayName || auth.user.email}
+                  </span>
+                )}
+              </>
+            )}
+            <button 
+              onClick={handleAuthAction}
               className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-gray-500 to-gray-600 text-white text-sm font-medium rounded-lg hover:from-gray-600 hover:to-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200 shadow-md hover:shadow-lg"
             >
               {auth.isAuthenticated ? 'Logout' : 'Login'}
-            </Link>
+            </button>
           </div>
         </div>
       </div>

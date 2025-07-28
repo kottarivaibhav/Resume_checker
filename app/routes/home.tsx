@@ -1,7 +1,7 @@
 import type { Route } from "./+types/home";
 import Navbar from "~/components/Navbar";
 import ResumeCard from "~/components/ResumeCard";
-import {usePuterStore} from "~/lib/puter";
+import {useFirebaseStore} from "~/lib/firebaseStore";
 import {Link, useNavigate} from "react-router";
 import {useEffect, useState} from "react";
 
@@ -13,7 +13,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const { auth, kv } = usePuterStore();
+  const { auth, firestore } = useFirebaseStore();
   const navigate = useNavigate();
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loadingResumes, setLoadingResumes] = useState(false);
@@ -24,20 +24,28 @@ export default function Home() {
 
   useEffect(() => {
     const loadResumes = async () => {
+      if (!auth.user) return;
+      
       setLoadingResumes(true);
 
-      const resumes = (await kv.list('resume:*', true)) as KVItem[];
-
-      const parsedResumes = resumes?.map((resume) => (
-          JSON.parse(resume.value) as Resume
-      ))
-
-      setResumes(parsedResumes || []);
-      setLoadingResumes(false);
+      try {
+        const userResumes = await firestore.getResumes(auth.user.uid);
+        setResumes(userResumes);
+      } catch (error) {
+        console.error('Failed to load resumes:', error);
+        // Handle specific Firestore permission errors
+        if (error instanceof Error && error.message.includes('permissions')) {
+          console.error('Firestore permissions error. Please check your Firestore rules.');
+        }
+      } finally {
+        setLoadingResumes(false);
+      }
     }
 
-    loadResumes()
-  }, []);
+    if (auth.isAuthenticated && auth.user) {
+      loadResumes();
+    }
+  }, [auth.isAuthenticated, auth.user]);
 
   return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
     <Navbar />
