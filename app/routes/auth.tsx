@@ -2,6 +2,7 @@ import React,{useEffect} from 'react'
 import { useFirebaseStore } from '~/lib/firebaseStore'
 import {useLocation, useNavigate} from 'react-router'
 import Navbar from '~/components/Navbar'
+import { AuthTest } from '~/components/AuthTest'
 
 
 export const meta = () => ([
@@ -75,8 +76,10 @@ const auth = () => {
                 
             </div>
         </section>
-
       </div>
+      
+      {/* Debug component - remove in production */}
+      
    </main>
   )
 }

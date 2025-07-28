@@ -71,7 +71,31 @@ export const useFirebaseStore = create<FirebaseStore>((set, get) => {
     set({ isLoading: true, error: null });
 
     try {
-      // Try popup first, fall back to redirect
+      // First, check for any pending redirect result
+      const redirectResult = await getRedirectResult(auth);
+      if (redirectResult) {
+        console.log('Found redirect result:', redirectResult.user.displayName);
+        const user = redirectResult.user;
+        const firebaseUser: FirebaseUser = {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+        };
+
+        set({
+          auth: {
+            ...get().auth,
+            user: firebaseUser,
+            isAuthenticated: true,
+          },
+          isLoading: false,
+        });
+        return;
+      }
+
+      // Try popup first (better UX)
+      console.log('Attempting popup authentication...');
       try {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
@@ -91,20 +115,29 @@ export const useFirebaseStore = create<FirebaseStore>((set, get) => {
           },
           isLoading: false,
         });
+        console.log('Popup authentication successful');
+        
       } catch (popupError: any) {
-        // If popup fails due to CORP, try redirect
+        console.log('Popup failed, trying redirect...', popupError.code);
+        
+        // If popup fails due to browser policies, try redirect
         if (popupError.code === 'auth/popup-blocked' || 
             popupError.code === 'auth/cancelled-popup-request' ||
-            popupError.message.includes('Cross-Origin-Opener-Policy')) {
-          console.log('Popup blocked, trying redirect...');
+            popupError.code === 'auth/popup-closed-by-user' ||
+            popupError.message?.includes('Cross-Origin-Opener-Policy')) {
+          
+          console.log('Using redirect authentication as fallback...');
           await signInWithRedirect(auth, provider);
-          // Note: redirect will reload the page, so we don't set state here
+          // Redirect will reload the page, so we don't set state here
+          
         } else {
-          throw popupError;
+          throw popupError; // Re-throw other errors
         }
       }
-    } catch (error) {
-      const msg = error instanceof Error ? error.message : "Sign in failed";
+      
+    } catch (error: any) {
+      console.error('Authentication error:', error);
+      const msg = error instanceof Error ? error.message : "Authentication failed";
       setError(msg);
     }
   };
@@ -216,11 +249,18 @@ export const useFirebaseStore = create<FirebaseStore>((set, get) => {
     }
   };
 
+  const clearError = (): void => {
+    set({ error: null });
+  };
+
   const init = (): void => {
+    console.log('Initializing Firebase store...');
+    
     // Check for redirect result first
     getRedirectResult(auth)
       .then((result) => {
         if (result) {
+          console.log('Processing redirect result for:', result.user.displayName);
           const user = result.user;
           const firebaseUser: FirebaseUser = {
             uid: user.uid,
@@ -237,11 +277,13 @@ export const useFirebaseStore = create<FirebaseStore>((set, get) => {
             },
             isLoading: false,
           });
+        } else {
+          console.log('No redirect result found');
         }
       })
       .catch((error) => {
         console.error('Redirect result error:', error);
-        setError(error.message);
+        setError(`Redirect authentication failed: ${error.message}`);
       });
 
     // Listen for authentication state changes

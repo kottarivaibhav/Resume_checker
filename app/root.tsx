@@ -10,6 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import { useFirebaseStore } from "./lib/firebaseStore";
+import { usePuterStore } from "./lib/puter";
 import { useEffect } from "react";
 
 export const links: Route.LinksFunction = () => [
@@ -27,11 +28,14 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   
-  const {init } = useFirebaseStore();
+  const { init: initFirebase } = useFirebaseStore();
+  const { init: initPuter } = usePuterStore();
 
-  useEffect(()=>{
-    init()
-  },[init])
+  useEffect(() => {
+    // Initialize both Firebase and Puter
+    initFirebase();
+    initPuter();
+  }, [initFirebase, initPuter])
   
   return (
     <html lang="en">
@@ -42,6 +46,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <script src="https://js.puter.com/v2/"></script>
         {children}
         <ScrollRestoration />
         <Scripts />
