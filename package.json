@@ -11,7 +11,7 @@
   "dependencies": {
     "@react-router/node": "^7.7.0",
     "@react-router/serve": "^7.7.0",
-    "@react-router/netlify": "^7.7.0",
+    
     "clsx": "^2.1.1",
     "firebase": "^12.0.0",
     "isbot": "^5.1.27",
