@@ -1,9 +1,11 @@
 import React,{useEffect} from 'react'
 import { usePuterStore } from '~/lib/puter'
 import {useLocation, useNavigate} from 'react-router'
+import Navbar from '~/components/Navbar'
+
 
 export const meta = () => ([
-{   title : 'Resumeid | Auth'},
+{   title : 'Resumecheck | Auth'},
     {name:'description',content:'Log into your account'}
 ]
     
@@ -18,6 +20,7 @@ const auth = () => {
     },[auth.isAuthenticated,next])
   return (
    <main className="bg-[url('/images/bg-auth.svg)] bg-cover min-h-screen flex items-center justify-center">
+    <Navbar />
       <div className='gradient-border shadow-lg'>
         <section className='flex flex-col gap-8 bg-white rounded-2xl p-10'>
             <div className='flex flex-col items-center gap-2 text-center'>
