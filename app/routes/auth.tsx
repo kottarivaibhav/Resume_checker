@@ -79,7 +79,9 @@ const auth = () => {
       </div>
       
       {/* Debug component - remove in production */}
-      
+      <div className="fixed bottom-4 right-4">
+        <AuthTest />
+      </div>
    </main>
   )
 }
