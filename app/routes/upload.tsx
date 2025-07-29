@@ -8,6 +8,8 @@ import { generateUUID } from '~/lib/utils';
 import {prepareInstructions} from "../../constants";
 import { useFirebaseStore } from '~/lib/firebaseStore';
 import { DebugInfo } from '../components/DebugInfo';
+import bgMain from '~/assets/images/bg-main.svg'
+import resumeScan from '~/assets/images/resume-scan.gif'
 
 const upload = () => {
     const puterStore = usePuterStore();
@@ -27,11 +29,14 @@ const upload = () => {
     // Show loading if Puter is not ready
     if (!puterStore || puterStore.isLoading) {
         return (
-            <main className="bg-[url('/images/bg-main.svg')] min-h-screen flex items-center justify-center">
+            <main 
+                className="min-h-screen flex items-center justify-center"
+                style={{ backgroundImage: `url(${bgMain})` }}
+            >
                 <Navbar />
                 <div className="text-center">
                     <h2>Loading...</h2>
-                    <img src="/images/resume-scan.gif" className="w-[200px] mx-auto" />
+                    <img src={resumeScan} className="w-[200px] mx-auto" />
                 </div>
             </main>
         );
@@ -181,7 +186,7 @@ const upload = () => {
         }
     }
     return (
-    <main className="bg-[url('/images/bg-main.svg')]">
+    <main style={{ backgroundImage: `url(${bgMain})` }}>
         <Navbar />
         
         <section className='main-section'>
@@ -190,7 +195,7 @@ const upload = () => {
                 {isProcessing ? (
                     <>
                     <h2>{statusText}</h2>
-                    <img src="/images/resume-scan.gif" className='w-full' />                    
+                    <img src={resumeScan} className='w-full' />                    
                     </>
                 ):(
                     <>

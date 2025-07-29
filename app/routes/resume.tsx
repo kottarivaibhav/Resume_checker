@@ -4,6 +4,9 @@ import {usePuterStore} from "~/lib/puter";
 import Summary from "~/components/Summary";
 import ATS from "~/components/ATS";
 import Details from "~/components/Details";
+import backIcon from '~/assets/icons/back.svg'
+import bgSmall from '~/assets/images/bg-small.svg'
+import resumeScan2 from '~/assets/images/resume-scan-2.gif'
 
 export const meta = () => ([
     { title: 'Resumecheck | Review ' },
@@ -53,12 +56,15 @@ const Resume = () => {
         <main className="!pt-0">
             <nav className="resume-nav">
                 <Link to="/" className="back-button">
-                    <img src="/icons/back.svg" alt="logo" className="w-2.5 h-2.5" />
+                    <img src={backIcon} alt="logo" className="w-2.5 h-2.5" />
                     <span className="text-gray-800 text-sm font-semibold">Back to Homepage</span>
                 </Link>
             </nav>
             <div className="flex flex-row w-full max-lg:flex-col-reverse">
-                <section className="feedback-section bg-[url('/images/bg-small.svg') bg-cover h-[100vh] sticky top-0 items-center justify-center">
+                <section 
+                    className="feedback-section bg-cover h-[100vh] sticky top-0 items-center justify-center"
+                    style={{ backgroundImage: `url(${bgSmall})` }}
+                >
                     {imageUrl && resumeUrl && (
                         <div className="animate-in fade-in duration-1000 gradient-border max-sm:m-0 h-[90%] max-wxl:h-fit w-fit">
                             <a href={resumeUrl} target="_blank" rel="noopener noreferrer">
@@ -81,7 +87,7 @@ const Resume = () => {
                             
                         </div>
                     ) : (
-                        <img src="/images/resume-scan-2.gif" className="w-full" />
+                        <img src={resumeScan2} className="w-full" />
                     )}
                 </section>
             </div>

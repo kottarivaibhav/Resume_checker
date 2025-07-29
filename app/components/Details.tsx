@@ -5,6 +5,8 @@ import {
   AccordionHeader,
   AccordionItem,
 } from "./Accordian";
+import checkIcon from '~/assets/icons/check.svg'
+import warningIcon from '~/assets/icons/warning.svg'
 
 const ScoreBadge = ({ score }: { score: number }) => {
   return (
@@ -19,7 +21,7 @@ const ScoreBadge = ({ score }: { score: number }) => {
       )}
     >
       <img
-        src={score > 69 ? "/icons/check.svg" : "/icons/warning.svg"}
+        src={score > 69 ? checkIcon : warningIcon}
         alt="score"
         className="size-4"
       />
@@ -66,7 +68,7 @@ const CategoryContent = ({
           <div className="flex flex-row gap-2 items-center" key={index}>
             <img
               src={
-                tip.type === "good" ? "/icons/check.svg" : "/icons/warning.svg"
+                tip.type === "good" ? checkIcon : warningIcon
               }
               alt="score"
               className="size-5"
@@ -90,8 +92,8 @@ const CategoryContent = ({
               <img
                 src={
                   tip.type === "good"
-                    ? "/icons/check.svg"
-                    : "/icons/warning.svg"
+                    ? checkIcon
+                    : warningIcon
                 }
                 alt="score"
                 className="size-5"

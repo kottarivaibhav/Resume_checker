@@ -4,6 +4,8 @@ import ResumeCard from "~/components/ResumeCard";
 import {useFirebaseStore} from "~/lib/firebaseStore";
 import {Link, useNavigate} from "react-router";
 import {useEffect, useState} from "react";
+import bgMain from '~/assets/images/bg-main.svg'
+import resumeScan2 from '~/assets/images/resume-scan-2.gif'
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -47,7 +49,10 @@ export default function Home() {
     }
   }, [auth.isAuthenticated, auth.user]);
 
-  return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
+  return <main 
+    className="bg-cover"
+    style={{ backgroundImage: `url(${bgMain})` }}
+  >
     <Navbar />
 
     <section className="main-section">
@@ -61,7 +66,7 @@ export default function Home() {
       </div>
       {loadingResumes && (
           <div className="flex flex-col items-center justify-center">
-            <img src="/images/resume-scan-2.gif" className="w-[200px]" />
+            <img src={resumeScan2} className="w-[200px]" />
           </div>
       )}
 

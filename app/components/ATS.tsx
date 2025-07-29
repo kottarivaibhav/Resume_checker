@@ -1,4 +1,9 @@
 import { cn } from "~/lib/utils";
+import atsGoodIcon from '~/assets/icons/ats-good.svg'
+import atsWarningIcon from '~/assets/icons/ats-warning.svg'
+import atsBadIcon from '~/assets/icons/ats-bad.svg'
+import checkIcon from '~/assets/icons/check.svg'
+import warningIcon from '~/assets/icons/warning.svg'
 
 const ATS = ({
   score,
@@ -22,10 +27,10 @@ const ATS = ({
         <img
           src={
             score > 69
-              ? "/icons/ats-good.svg"
+              ? atsGoodIcon
               : score > 49
-              ? "/icons/ats-warning.svg"
-              : "/icons/ats-bad.svg"
+              ? atsWarningIcon
+              : atsBadIcon
           }
           alt="ATS"
           className="w-10 h-10"
@@ -45,8 +50,8 @@ const ATS = ({
             <img
               src={
                 suggestion.type === "good"
-                  ? "/icons/check.svg"
-                  : "/icons/warning.svg"
+                  ? checkIcon
+                  : warningIcon
               }
               alt="ATS"
               className="w-4 h-4"
