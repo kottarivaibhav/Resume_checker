@@ -8,7 +8,7 @@ import { generateUUID } from '~/lib/utils';
 import {prepareInstructions} from "../../constants";
 import { useFirebaseStore } from '~/lib/firebaseStore';
 import { DebugInfo } from '../components/DebugInfo';
-import bgMain from '~/assets/images/bg-main.svg'
+import bgMain from '../assets/images/bg-main.svg'
 import resumeScan from '~/assets/images/resume-scan.gif'
 
 const upload = () => {
@@ -26,7 +26,7 @@ const upload = () => {
         }
     }, [auth.isAuthenticated, navigate]);
 
-    // Show loading if Puter is not ready
+    // Show loading if Puter is not ready, but don't block if Puter fails
     if (!puterStore || puterStore.isLoading) {
         return (
             <main 
@@ -37,6 +37,23 @@ const upload = () => {
                 <div className="text-center">
                     <h2>Loading...</h2>
                     <img src={resumeScan} className="w-[200px] mx-auto" />
+                </div>
+            </main>
+        );
+    }
+
+    // Show error state if Puter failed to initialize
+    if (puterStore.error) {
+        return (
+            <main 
+                className="min-h-screen flex items-center justify-center"
+                style={{ backgroundImage: `url(${bgMain})` }}
+            >
+                <Navbar />
+                <div className="text-center">
+                    <h2>Service Temporarily Unavailable</h2>
+                    <p className="text-red-500">Unable to connect to file storage service.</p>
+                    <p className="text-gray-500">Please try again later or contact support.</p>
                 </div>
             </main>
         );

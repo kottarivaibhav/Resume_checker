@@ -97,6 +97,13 @@ export const useFirebaseStore = create<FirebaseStore>((set, get) => {
       // Try popup first (better UX)
       console.log('Attempting popup authentication...');
       try {
+        // For production/Vercel, use redirect to avoid CORS issues
+        if (window.location.hostname !== 'localhost') {
+          console.log('Production environment detected, using redirect authentication...');
+          await signInWithRedirect(auth, provider);
+          return;
+        }
+        
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         

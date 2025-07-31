@@ -126,37 +126,40 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     set({ isLoading: true, error: null });
 
     try {
-      const isSignedIn = await puter.auth.isSignedIn();
-      if (isSignedIn) {
-        const user = await puter.auth.getUser();
-        set({
-          auth: {
-            user,
-            isAuthenticated: true,
-            signIn: get().auth.signIn,
-            signOut: get().auth.signOut,
-            refreshUser: get().auth.refreshUser,
-            checkAuthStatus: get().auth.checkAuthStatus,
-            getUser: () => user,
-          },
-          isLoading: false,
-        });
-        return true;
-      } else {
-        set({
-          auth: {
-            user: null,
-            isAuthenticated: false,
-            signIn: get().auth.signIn,
-            signOut: get().auth.signOut,
-            refreshUser: get().auth.refreshUser,
-            checkAuthStatus: get().auth.checkAuthStatus,
-            getUser: () => null,
-          },
-          isLoading: false,
-        });
-        return false;
-      }
+      // Skip Puter authentication since we're using Firebase for auth
+      // Just initialize the services without checking auth status
+      set({
+        auth: {
+          user: null,
+          isAuthenticated: false,
+          signIn: get().auth.signIn,
+          signOut: get().auth.signOut,
+          refreshUser: get().auth.refreshUser,
+          checkAuthStatus: get().auth.checkAuthStatus,
+          getUser: () => null,
+        },
+        fs: {
+          write: getPuter()?.fs.write || (() => Promise.reject("Puter not available")),
+          read: getPuter()?.fs.read || (() => Promise.reject("Puter not available")),
+          upload: getPuter()?.fs.upload || (() => Promise.reject("Puter not available")),
+          delete: getPuter()?.fs.delete || (() => Promise.reject("Puter not available")),
+          readDir: getPuter()?.fs.readdir || (() => Promise.reject("Puter not available")),
+        },
+        ai: {
+          chat: getPuter()?.ai.chat || (() => Promise.reject("Puter not available")),
+          img2txt: getPuter()?.ai.img2txt || (() => Promise.reject("Puter not available")),
+        },
+        kv: {
+          get: getPuter()?.kv.get || (() => Promise.reject("Puter not available")),
+          set: getPuter()?.kv.set || (() => Promise.reject("Puter not available")),
+          delete: getPuter()?.kv.delete || (() => Promise.reject("Puter not available")),
+          list: getPuter()?.kv.list || (() => Promise.reject("Puter not available")),
+          flush: getPuter()?.kv.flush || (() => Promise.reject("Puter not available")),
+        },
+        puterReady: true,
+        isLoading: false,
+      });
+      return true;
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Failed to check auth status";
@@ -166,35 +169,16 @@ export const usePuterStore = create<PuterStore>((set, get) => {
   };
 
   const signIn = async (): Promise<void> => {
-    const puter = getPuter();
-    if (!puter) {
-      setError("Puter.js not available");
-      return;
-    }
-
-    set({ isLoading: true, error: null });
-
-    try {
-      await puter.auth.signIn();
-      await checkAuthStatus();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Sign in failed";
-      setError(msg);
-    }
+    // Puter authentication disabled - using Firebase instead
+    console.warn("Puter authentication is disabled. Use Firebase authentication instead.");
+    return;
   };
 
   const signOut = async (): Promise<void> => {
-    const puter = getPuter();
-    if (!puter) {
-      setError("Puter.js not available");
-      return;
-    }
-
-    set({ isLoading: true, error: null });
-
-    try {
-      await puter.auth.signOut();
-      set({
+    // Puter authentication disabled - using Firebase instead
+    console.warn("Puter authentication is disabled. Use Firebase authentication instead.");
+    return;
+  };
         auth: {
           user: null,
           isAuthenticated: false,
@@ -213,39 +197,16 @@ export const usePuterStore = create<PuterStore>((set, get) => {
   };
 
   const refreshUser = async (): Promise<void> => {
-    const puter = getPuter();
-    if (!puter) {
-      setError("Puter.js not available");
-      return;
-    }
-
-    set({ isLoading: true, error: null });
-
-    try {
-      const user = await puter.auth.getUser();
-      set({
-        auth: {
-          user,
-          isAuthenticated: true,
-          signIn: get().auth.signIn,
-          signOut: get().auth.signOut,
-          refreshUser: get().auth.refreshUser,
-          checkAuthStatus: get().auth.checkAuthStatus,
-          getUser: () => user,
-        },
-        isLoading: false,
-      });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Failed to refresh user";
-      setError(msg);
-    }
+    // Puter authentication disabled - using Firebase instead
+    console.warn("Puter authentication is disabled. Use Firebase authentication instead.");
+    return;
   };
-
+      });
   const init = (): void => {
     const puter = getPuter();
     if (puter) {
       set({ puterReady: true });
-      checkAuthStatus();
+      // Skip auth status check since we're using Firebase
       return;
     }
 
@@ -253,7 +214,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
       if (getPuter()) {
         clearInterval(interval);
         set({ puterReady: true });
-        checkAuthStatus();
+        // Skip auth status check since we're using Firebase
       }
     }, 100);
 

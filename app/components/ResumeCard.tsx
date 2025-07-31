@@ -9,10 +9,23 @@ const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, imagePath }
 
     useEffect(() => {
         const loadResume = async () => {
-            const blob = await fs.read(imagePath);
-            if(!blob) return;
-            let url = URL.createObjectURL(blob);
-            setResumeUrl(url);
+            // Check if imagePath is already a bundled asset (starts with blob: or data: or is a URL)
+            if (typeof imagePath === 'string' && (imagePath.startsWith('blob:') || imagePath.startsWith('data:') || imagePath.startsWith('http') || imagePath.startsWith('/_assets'))) {
+                setResumeUrl(imagePath);
+                return;
+            }
+            
+            // Otherwise, try to read from Puter storage (for backward compatibility)
+            try {
+                const blob = await fs.read(imagePath);
+                if(!blob) return;
+                let url = URL.createObjectURL(blob);
+                setResumeUrl(url);
+            } catch (error) {
+                console.log('Failed to load image from Puter storage, using fallback:', error);
+                // Use imagePath directly as fallback
+                setResumeUrl(imagePath);
+            }
         }
 
         loadResume();

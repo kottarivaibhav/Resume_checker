@@ -1,6 +1,7 @@
 import {Link, useNavigate, useParams} from "react-router";
 import {useEffect, useState} from "react";
 import {usePuterStore} from "~/lib/puter";
+import {useFirebaseStore} from "~/lib/firebaseStore";
 import Summary from "~/components/Summary";
 import ATS from "~/components/ATS";
 import Details from "~/components/Details";
@@ -14,7 +15,8 @@ export const meta = () => ([
 ])
 
 const Resume = () => {
-    const { auth, isLoading, fs, kv } = usePuterStore();
+    const { fs, kv } = usePuterStore(); // Only use Puter for file storage, not auth
+    const { auth } = useFirebaseStore(); // Use Firebase for authentication
     const { id } = useParams();
     const [imageUrl, setImageUrl] = useState('');
     const [resumeUrl, setResumeUrl] = useState('');
@@ -22,8 +24,8 @@ const Resume = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(!isLoading && !auth.isAuthenticated) navigate(`/auth?next=/resume/${id}`);
-    }, [isLoading])
+        if(!auth.isAuthenticated) navigate(`/auth?next=/resume/${id}`);
+    }, [auth.isAuthenticated, navigate])
 
     useEffect(() => {
         const loadResume = async () => {

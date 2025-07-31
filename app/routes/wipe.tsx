@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { usePuterStore } from "~/lib/puter";
+import { useFirebaseStore } from "~/lib/firebaseStore";
 
 const WipeApp = () => {
-    const { auth, isLoading, error, clearError, fs, ai, kv } = usePuterStore();
+    const { fs, kv } = usePuterStore(); // Only use Puter for file storage
+    const { auth } = useFirebaseStore(); // Use Firebase for authentication
     const navigate = useNavigate();
     const [files, setFiles] = useState<FSItem[]>([]);
 
@@ -17,10 +19,10 @@ const WipeApp = () => {
     }, []);
 
     useEffect(() => {
-        if (!isLoading && !auth.isAuthenticated) {
+        if (!auth.isAuthenticated) {
             navigate("/auth?next=/wipe");
         }
-    }, [isLoading]);
+    }, [auth.isAuthenticated, navigate]);
 
     const handleDelete = async () => {
         files.forEach(async (file) => {
